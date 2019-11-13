@@ -8,7 +8,7 @@ Para seu pleno uso, são necessárias algumas outras bibliotecas e credenciais. 
 
 `pip install pandas alpha-vantage beautifulsoup4`
 
-A API de onde obtemos os dados de mercado é a Alpha Vantage e você pode obter a [chave de uso gratuitamente](https://www.alphavantage.co/support/#api-key). Essa chave será necessária sempre que você utilizar as funções `get_daily` e `get_intraday`.
+A API de onde obtemos os dados de mercado é a Alpha Vantage e você pode obter a [chave de uso gratuitamente](https://www.alphavantage.co/support/#api-key). Essa chave será necessária sempre que você utilizar as funções `daily` e `intraday`.
 
 ## Funções
 Por enquanto o helper tem as seguintes funções:
