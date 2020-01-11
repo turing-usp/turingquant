@@ -18,8 +18,14 @@ Por enquanto o helper tem as seguintes funções:
 - `get_fundamentus` - obtém dados do site fundamentus.com.br sobre uma ação ou lista de ações
 - `get_tickers` - obtém todos os tickers negociados na B3 à partir do fundamentus
 - `get_ibov` - obtém a última carteira do Índice Ibovespa
+- `get_info` - fornece setor, subsetor, segmento e nome referente aos tickers indicados
 
 No código você pode verificar o que cada função retorna e a descrição de cada parâmetro que as funções recebem.
 
 ## Feito por:
 - Guilherme Corazza Marques
+- Guilherme Fernandes G. Silva
+
+## License & copyright
+© Grupo Turing, Universidade de São Paulo
+
