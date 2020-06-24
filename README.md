@@ -22,4 +22,7 @@ Por enquanto o helper tem as seguintes funções:
 No código você pode verificar o que cada função retorna e a descrição de cada parâmetro que as funções recebem.
 
 ## Feito por:
-- Guilherme Corazza Marques
+- [Guilherme Corazza Marques](https://github.com/guicmarques)
+- [Noel Viscome Eliezer](https://github.com/anor4k)
+- [Guilherme Fernandes](https://github.com/aateg)
+- [Lucas Leme](https://github.com/lucas-leme)
