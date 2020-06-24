@@ -1,33 +1,31 @@
 import numpy as np
 
-def sharpe_ratio (returns, risk_free = 0):
 
+def sharpe_ratio(returns, risk_free=0):
     expected_returns = returns.mean()
-
     risk = returns.std()
 
-    return (expected_returns - risk_free) / risk
+    return(expected_returns - risk_free) / risk
 
-def beta (returns, benchmark):
 
+def beta(returns, benchmark):
     concat = np.matrix([returns, benchmark])
-
     cov = np.cov(concat)[0][1]
-
     benchmark_vol = np.std(benchmark)
 
     return cov / benchmark_vol
 
-def alpha (end_price, dps, start_price):
 
-    return (end_price + dps - start_price) / start_price
+def alpha(end_price, dps, start_price):
 
-def test_metrics ():
+    return(end_price + dps - start_price) / start_price
 
-        returns = np.random.uniform(-1, 1, 50)
-        market = np.random.uniform(-1, 1, 50)
 
-        start
+def test_metrics():
+    returns = np.random.uniform(-1, 1, 50)
+    market = np.random.uniform(-1, 1, 50)
 
-        print("Sharpe: ", sharpe_ratio(returns))
-        print("Beta: ", beta(returns, market))
+    start
+
+    print("Sharpe: ", sharpe_ratio(returns))
+    print("Beta: ", beta(returns, market))

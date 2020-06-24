@@ -27,9 +27,10 @@ def daily(key, ticker, br=True):
         ticker = ticker + ".SA"
 
     ts = TimeSeries(key=key, output_format='pandas')
-    
+
     try:
-        data, meta_data = ts.get_daily_adjusted(symbol=ticker, outputsize='full')
+        data, meta_data = ts.get_daily_adjusted(
+            symbol=ticker, outputsize='full')
     except:
         print("Couldn't get data, check if you passed the ticker correctly")
         return
@@ -45,15 +46,15 @@ def daily(key, ticker, br=True):
 
 def intraday(key, ticker, br=True, interval="1min"):
     '''
-    Essa função entrega a cotação intraday dos últimos 5 dias de 
-    um produto negociado em bolsa com melhor formatação de dados que a 
+    Essa função entrega a cotação intraday dos últimos 5 dias de
+    um produto negociado em bolsa com melhor formatação de dados que a
     biblioteca alpha_vantage.
 
     key[str]:      recebe a chave de uso do AlphaVantage
 
     ticker[str]:   recebe o ticker do papel que será obtido
 
-    br[bool]:      se True, adiciona ".SA" ao final do ticker, necessário para 
+    br[bool]:      se True, adiciona ".SA" ao final do ticker, necessário para
                    papeis brasileiros, se False, pesquisa o que foi passado em ticker
 
     interval[str]: recebe o período entre cada informação (1min, 5min, 15min, 30min, 60min)
@@ -63,9 +64,9 @@ def intraday(key, ticker, br=True, interval="1min"):
 
     if br:
         ticker = ticker + ".SA"
-    
+
     try:
-        data, meta_data = ts.get_intraday(symbol=ticker, 
+        data, meta_data = ts.get_intraday(symbol=ticker,
                                           interval=interval, outputsize='full')
     except:
         print("Couldn't get data, check if you passed the ticker correctly")
@@ -81,7 +82,7 @@ def intraday(key, ticker, br=True, interval="1min"):
 
 def get_fundamentus(ticker):
     '''
-    Essa função obtém os dados patrimoniais de empresas por meio do site 
+    Essa função obtém os dados patrimoniais de empresas por meio do site
     fundamentus.com.br
     '''
 
@@ -146,19 +147,19 @@ def get_fundamentus(ticker):
         vpa = float(txt3[11].string.replace('\n', '').replace(
             ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
         marg_bruta = float(txt3[16].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         marg_ebit = float(txt3[21].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         marg_liquida = float(txt3[26].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         ebit_ativo = float(txt3[31].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         roic = float(txt3[36].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         div_yield = float(txt3[39].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         roe = float(txt3[41].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         ev_ebit = float(txt3[44].string.replace('\n', '').replace(
             ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
         liquidez_corr = float(txt3[46].string.replace('\n', '').replace(
@@ -168,7 +169,7 @@ def get_fundamentus(ticker):
         divBr_patr = float(txt3[51].string.replace('\n', '').replace(
             ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
         cresc_rec = float(txt3[54].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0'))/100
+            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
         # balanço patrimonial
         ativo = int(txt4[2].string.replace('\n', '').replace(
             ' ', '').replace('.', '').replace('-', '0'))
@@ -230,16 +231,16 @@ def get_tickers(setor="Todos"):
     Essa função obtém os tickers listados no site fundamentus.com.br, seja um setor
     específico, uma lista de setores ou todos os tickers de todos os setores.
     '''
-    
+
     setores = {"Agropecuária": "42", "Água e Saneamento": "33", "Alimentos": "15",
                "Bebidas": "16", "Comércio": "27", "Comércio2": "12",
                "Comércio e Distribuição": "20", "Computadores e Equipamentos": "28",
                "Construção e Engenharia": "13", "Diversos": "26",
                "Embalagens": "6", "Energia Elétrica": "32",
                "Equipamentos Elétricos": "9", "Exploração de Imóveis": "39",
-               "Financeiros": "35", "Fumo": "17", "Gás": "34", 
+               "Financeiros": "35", "Fumo": "17", "Gás": "34",
                "Holdings Diversificadas": "40", "Hoteis e Restaurantes": "24",
-               "Madeira e Papel": "5", "Máquinas e Equipamentos": "10", 
+               "Madeira e Papel": "5", "Máquinas e Equipamentos": "10",
                "Materiais Diversos": "7", "Material de Transporte": "8",
                "Mídia": "23", "Mineração": "2", "Outros": "41",
                "Petróleo, Gás e Biocombustíveis": "1", "Previdência e Seguros": "38",
@@ -261,14 +262,15 @@ def get_tickers(setor="Todos"):
             return []
     elif isinstance(setor, list):
         lista_setores = setor
-    else: 
+    else:
         return []
-    
+
     tickers = []
 
     for item in lista_setores:
         try:
-            url = "https://www.fundamentus.com.br/resultado.php?setor=" + setores[item]
+            url = "https://www.fundamentus.com.br/resultado.php?setor=" + \
+                setores[item]
             response = requests.get(url)
         except:
             print("Não foi possível coletar informações do setor: " + item)
@@ -278,17 +280,18 @@ def get_tickers(setor="Todos"):
         tickers_bruto = soup.find('tbody').find_all("a")
         for ticker in tickers_bruto:
             tickers.append(ticker.string)
-        
+
     tickers.sort()
     return tickers
 
-def get_ibov(atual = True):
+
+def get_ibov(atual=True):
     '''
     Essa função obtém a composição atual do Índice Bovespa
     '''
 
     empresas = []
-    
+
     if atual:
         url = "http://bvmf.bmfbovespa.com.br/indices/ResumoCarteiraQuadrimestre.aspx?Indice=IBOV&idioma=pt-br"
         print("Coletando informações da B3")
@@ -303,11 +306,13 @@ def get_ibov(atual = True):
             return None
 
         for i in range(100):
-            id_linha = 'ctl00_contentPlaceHolderConteudo_grdResumoCarteiraPrevia_ctl00__' + str(i)
+            id_linha = 'ctl00_contentPlaceHolderConteudo_grdResumoCarteiraPrevia_ctl00__' + \
+                str(i)
             linha = soup.find_all(id=id_linha)
             info = []
             if len(linha) > 0:
-                info = list(BeautifulSoup(str(linha), "html.parser").find_all("span", class_="label"))
+                info = list(BeautifulSoup(str(linha), "html.parser").find_all(
+                    "span", class_="label"))
                 if len(info) == 5:
                     try:
                         ticker = info[0].string
@@ -326,5 +331,5 @@ def get_ibov(atual = True):
                     empresas.append(empresa)
             else:
                 continue
-        
+
     return pd.DataFrame(empresas)
