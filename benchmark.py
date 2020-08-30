@@ -6,19 +6,19 @@ from pandas_datareader import data
 
 
 def benchmark(ticker, start: pd.datetime, end: pd.datetime, source='yahoo', plot=True):
-""" 
-Essa função fornece um plot de retorno acumulado de um ativo ao longo de um dado intervalo de tempo, definido pelos parâmetros start e end. 
-Os dados são coletados da API do yahoo, caso haja dados faltantes, os retornos são contabilizados como nulos.
+    """
+    Essa função fornece um plot de retorno acumulado de um ativo ao longo de um dado intervalo de tempo, definido pelos parâmetros start e end.
+    Os dados são coletados da API do yahoo, caso haja dados faltantes, os retornos são contabilizados como nulos.
 
-ticker[str]: recebe o ticker do papel que será obtido
+    ticker[str]: recebe o ticker do papel que será obtido
 
-start[pd.datetime]: início do intervalo
+    start[pd.datetime]: início do intervalo
 
-end[pd.datetime]: final do interval
+    end[pd.datetime]: final do interval
 
-plot[bool]: (default = True) se True, realiza o plot 
-"""
-    
+    plot[bool]: (default = True) se True, realiza o plot
+    """
+
     asset = data.DataReader(ticker, data_source=source, start=start, end=end)
     returns_daily = asset['Close'].pct_change().fillna(0)
     cumulative = pd.DataFrame.cumprod(1 + returns_daily) - 1
@@ -27,31 +27,29 @@ plot[bool]: (default = True) se True, realiza o plot
     return cumulative
 
 
-
 def benchmark_ibov(start: pd.datetime, end: pd.datetime, source='yahoo', plot=True):
-"""
-Essa função produz um plot da evolução do Índice Bovespa ao longo de um dado intervalo, definido pelos parâmetros start e end.
+    """
+    Essa função produz um plot da evolução do Índice Bovespa ao longo de um dado intervalo, definido pelos parâmetros start e end.
 
-start[pd.datetime]: início do intervalo
+    start[pd.datetime]: início do intervalo
 
-end[pd.datetime]: final do interval
+    end[pd.datetime]: final do interval
 
-plot[bool]: (default = True) se True, realiza o plot
-"""
-    
+    plot[bool]: (default = True) se True, realiza o plot
+    """
+
     return benchmark('^BVSP', start=start, end=end, source=source, plot=plot)
 
 
-
 def benchmark_sp500(start: pd.datetime, end: pd.datetime, source='yahoo', plot=True):
-"""
-Essa função produz um plot da evolução do Índice S&P500 ao longo de um dado intervalo, definido pelos parâmetros start e end.
+    """
+    Essa função produz um plot da evolução do Índice S&P500 ao longo de um dado intervalo, definido pelos parâmetros start e end.
 
-start[pd.datetime]: início do intervalo
+    start[pd.datetime]: início do intervalo
 
-end[pd.datetime]: final do interval
+    end[pd.datetime]: final do interval
 
-plot[bool]: (default = True) se True, realiza o plot
-"""
-    
+    plot[bool]: (default = True) se True, realiza o plot
+    """
+
     return benchmark('^GSPC', start=start, end=end, source=source, plot=plot)
