@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 
 def daily(key, ticker, br=True):
-    '''
+    """
     Essa função entrega a cotação dia a dia de um produto negociado
     em bolsa com melhor formatação de dados que a biblioteca
     alpha_vantage.
@@ -21,7 +21,7 @@ def daily(key, ticker, br=True):
 
     br[bool]:    se True, adiciona ".SA" ao final do ticker, necessário para
                  papeis brasileiros
-    '''
+    """
 
     if br:
         ticker = ticker + ".SA"
@@ -45,7 +45,7 @@ def daily(key, ticker, br=True):
 
 
 def intraday(key, ticker, br=True, interval="1min"):
-    '''
+    """
     Essa função entrega a cotação intraday dos últimos 5 dias de
     um produto negociado em bolsa com melhor formatação de dados que a
     biblioteca alpha_vantage.
@@ -58,7 +58,7 @@ def intraday(key, ticker, br=True, interval="1min"):
                    papeis brasileiros, se False, pesquisa o que foi passado em ticker
 
     interval[str]: recebe o período entre cada informação (1min, 5min, 15min, 30min, 60min)
-    '''
+    """
 
     ts = TimeSeries(key=key, output_format='pandas')
 
@@ -81,10 +81,10 @@ def intraday(key, ticker, br=True, interval="1min"):
 
 
 def get_fundamentus(ticker):
-    '''
+    """
     Essa função obtém os dados patrimoniais de empresas por meio do site
     fundamentus.com.br
-    '''
+    """
 
     tickers = []
     if isinstance(ticker, str):
@@ -227,10 +227,10 @@ def get_fundamentus(ticker):
 
 
 def get_tickers(setor="Todos"):
-    '''
+    """
     Essa função obtém os tickers listados no site fundamentus.com.br, seja um setor
     específico, uma lista de setores ou todos os tickers de todos os setores.
-    '''
+    """
 
     setores = {"Agropecuária": "42", "Água e Saneamento": "33", "Alimentos": "15",
                "Bebidas": "16", "Comércio": "27", "Comércio2": "12",
@@ -286,9 +286,9 @@ def get_tickers(setor="Todos"):
 
 
 def get_ibov(atual=True):
-    '''
+    """
     Essa função obtém a composição atual do Índice Bovespa
-    '''
+    """
 
     empresas = []
 
