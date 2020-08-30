@@ -370,7 +370,7 @@ def get_financials(url):
 
 def get_income_statement(symbol):
     url = 'https://finance.yahoo.com/quote/' + symbol + '/financials'
-    return get_financials(url)
+    return get_financials(url).drop(['ttm'], axis=0)
 
 
 def get_balance_sheet(symbol):
@@ -380,4 +380,4 @@ def get_balance_sheet(symbol):
 
 def get_cashflow(symbol):
     url = 'https://finance.yahoo.com/quote/' + symbol + '/cash-flow'
-    return get_financials(url)
+    return get_financials(url).drop(['ttm'], axis=0)
