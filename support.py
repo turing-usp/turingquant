@@ -333,3 +333,51 @@ def get_ibov(atual=True):
                 continue
 
     return pd.DataFrame(empresas)
+
+
+def get_financials(url):
+    page_source = requests.get(url)
+
+    soup_html = BeautifulSoup(page_source.text, 'html.parser')
+    table_soup = soup_html.find(
+        'div', class_="M(0) Whs(n) BdEnd Bdc($seperatorColor) D(itb)")
+
+    # Get Title Row
+    headlines = table_soup.find('div', class_="D(tbr) C($primaryColor)")
+    headlines = headlines.findAll('span')
+    title_row = list()
+    for line in headlines:
+        title_row.append(line.text)
+
+    table = pd.DataFrame(None, columns=title_row)
+    remaining_lines = table_soup.findAll(
+        'div', class_="D(tbr) fi-row Bgc($hoverBgColor):h")
+    for row in remaining_lines:
+        columns = row.findChildren('div', recursive=False)
+        line_values = list()
+        for col in columns:
+            if ',' in col.text:
+                value = float(col.text.replace(',', ''))
+            elif '-' in col.text and len(col.text) == 1:
+                value = np.nan
+            else:
+                value = col.text
+            line_values.append(value)
+        table.loc[len(table)] = line_values
+    table = table.set_index(title_row[0])
+    return table.T
+
+
+def get_income_statement(symbol):
+    url = 'https://finance.yahoo.com/quote/' + symbol + '/financials'
+    return get_financials(url).drop(['ttm'], axis=0)
+
+
+def get_balance_sheet(symbol):
+    url = 'https://finance.yahoo.com/quote/' + symbol + '/balance-sheet'
+    return get_financials(url)
+
+
+def get_cashflow(symbol):
+    url = 'https://finance.yahoo.com/quote/' + symbol + '/cash-flow'
+    return get_financials(url).drop(['ttm'], axis=0)
