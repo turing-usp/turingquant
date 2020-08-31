@@ -381,3 +381,20 @@ def get_balance_sheet(symbol):
 def get_cashflow(symbol):
     url = 'https://finance.yahoo.com/quote/' + symbol + '/cash-flow'
     return get_financials(url).drop(['ttm'], axis=0)
+
+def get_sp500_tickers():
+    """
+    Essa função obtem todas o ticker de todas as ações do S&P 500.
+    """
+    resp = requests.get('http://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    table = soup.find('table', {'class': 'wikitable sortable'})
+    
+    tickers = []
+    for row in table.findAll('tr')[1:]:
+        ticker = row.findAll('td')[0].text
+        tickers.append(ticker)
+
+    tickers = [s.replace('\n', '') for s in tickers]
+
+    return tickers
