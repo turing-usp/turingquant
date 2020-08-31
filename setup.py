@@ -1,18 +1,28 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setup(
-    name="Quant_Utils",
+    name="turing-quant",
     version="0.1.0",
-    py_modules=["metrics", "benchmark", "support"],
-
+    packages=find_packages(),
     install_requires=["pandas", "pandas_datareader", "numpy", "matplotlib", "alpha_vantage", "bs4"],
 
     author="Grupo Turing",
     author_email="turing.usp@gmail.com",
     description="Ferramentas para obtenção e manipulação de dados financeiros.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     keywords="quant data scraping quantitative finance benchmark backtest",
     url="https://grupoturing.com.br",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
     project_urls={
-        "Source Code": "https://github.com/GrupoTuring/Quant-Utils"
-    }
+        "Source Code": "https://github.com/GrupoTuring/turing-quant"
+    },
+    python_requires='>=3.6'
 )
