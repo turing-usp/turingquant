@@ -431,3 +431,4 @@ def get_annual_hpr(ticker, period=252):
         income + value - value.shift(-1)) / value.shift(-1)
 
     return holding_period_return
+    
