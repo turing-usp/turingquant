@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="turing-quant",
+    name="turingquant",
     version="0.1.0",
     packages=find_packages(),
     install_requires=["pandas", "pandas_datareader", "numpy", "matplotlib", "alpha_vantage", "bs4"],
@@ -22,7 +22,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     project_urls={
-        "Source Code": "https://github.com/GrupoTuring/turing-quant"
+        "Source Code": "https://github.com/GrupoTuring/turingquant"
     },
     python_requires='>=3.6'
 )
