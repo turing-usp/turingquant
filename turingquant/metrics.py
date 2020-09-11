@@ -28,7 +28,7 @@ def beta(returns, benchmark):
 
     concat = np.matrix([returns, benchmark])
     cov = np.cov(concat)[0][1]
-    benchmark_vol = np.std(benchmark)
+    benchmark_vol = np.var(benchmark)
 
     return cov / benchmark_vol
 
