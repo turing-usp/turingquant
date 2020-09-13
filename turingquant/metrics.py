@@ -19,7 +19,7 @@ def sharpe_ratio(returns, risk_free=0):
     return(expected_returns - risk_free) / risk
 
 
-def beta(returns, benchmark, rolling_window=None, plot=False):
+def beta(returns, benchmark):
     """
     Essa função, a partir do fornecimento dos retornos do ativo e do benchmark, calcula o beta do ativo.
 
