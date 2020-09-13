@@ -7,7 +7,7 @@ setup(
     name="turingquant",
     version="0.1.2",
     packages=find_packages(),
-    install_requires=["pandas", "pandas_datareader", "numpy", "matplotlib", "alpha_vantage", "bs4"],
+    install_requires=["pandas", "pandas_datareader", "numpy", "matplotlib", "alpha_vantage", "bs4", "plotly"],
 
     author="Grupo Turing",
     author_email="turing.usp@gmail.com",
