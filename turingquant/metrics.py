@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import plotly.express as px
 
 
 def sharpe_ratio(returns, risk_free=0):
@@ -25,7 +27,6 @@ def beta(returns, benchmark):
 
     benchmark [pd.series]: série com o retorno do benchmark
     """
-
     concat = np.matrix([returns, benchmark])
     cov = np.cov(concat)[0][1]
     benchmark_vol = np.var(benchmark)
@@ -47,6 +48,62 @@ def alpha(end_price, dps, start_price):
     return(end_price + dps - start_price) / start_price
 
 
+# %%
+def rolling_beta(returns, benchmark, window, plot=True):
+    """
+    Plota o beta móvel para um ativo e um benchmark de referência, na forma de séries de retornos.
+
+    Parâmetros:
+        returns (array): série de retornos para o qual o beta será calculado.
+        benchmark (array): série de retornos para usar de referência no cálculo do beta.
+        window (int): janela móvel para calcular o beta ao longo do tempo.
+        plot (bool): se `True`, plota um gráfico de linha com o beta ao longo do tempo.
+
+    Retorna:
+        rolling_beta (pd.Series): uma série com os valores do Beta para os últimos `window` dias.
+            A série não possui os `window` primeiros dias.
+
+    """
+    returns = pd.DataFrame(returns)
+    benchmark = pd.DataFrame(benchmark)
+    merged = returns.merge(benchmark, left_index=True, right_index=True)
+    # one-liner meio ilegível mas: pega um array de NaN de numpy e junta com uma lista
+    # que itera entre (window, len) e calcula o beta pros últimos `window` dias
+    merged['rolling_beta'] = np.append(np.full(window, np.nan),
+                                       [beta(merged.iloc[i - window:i, 0], merged.iloc[i - window:i, 1])
+                                       for i in range(window, len(merged))]
+                                       )
+    merged = merged[window:]
+    if plot:
+        fig = px.line(merged['rolling_beta'], title="Beta móvel")
+        overall_beta = beta(merged.iloc[:, 0], merged.iloc[:, 1])
+        fig.update_layout(shapes=[
+            dict(
+                type='line',
+                xref='paper', x0=0, x1=1,
+                yref='y', y0=overall_beta, y1=overall_beta,
+                line=dict(
+                    color='grey',
+                    width=2,
+                    dash='dash'
+                )
+            )
+        ], annotations=[
+            dict(
+                text='beta total: %.3f' % overall_beta,
+                xref='paper', x=0.05,
+                yref='y', y=overall_beta,
+                xanchor='left'
+            )
+        ])
+        fig.update_layout(showlegend=False)
+        fig.update_xaxes(title_text='Tempo')
+        fig.update_yaxes(title_text='Beta móvel: ' + str(window) + ' períodos')
+        fig.show()
+    return merged['rolling_beta']
+
+
+# %%
 def test_metrics():
     """
     Essa função define uma série aleatória de 50 elementos de retornos de um ativo fictício e de um índice de mercado e, a partir deles,
