@@ -63,19 +63,11 @@ def rolling_beta(returns, benchmark, window, plot=True):
             A série não possui os `window` primeiros dias.
 
     """
-    returns = pd.DataFrame(returns)
-    benchmark = pd.DataFrame(benchmark)
-    merged = returns.merge(benchmark, left_index=True, right_index=True)
-    # one-liner meio ilegível mas: pega um array de NaN de numpy e junta com uma lista
-    # que itera entre (window, len) e calcula o beta pros últimos `window` dias
-    merged['rolling_beta'] = np.append(np.full(window, np.nan),
-                                       [beta(merged.iloc[i - window:i, 0], merged.iloc[i - window:i, 1])
-                                        for i in range(window, len(merged))]
-                                       )
-    merged = merged[window:]
+    rolling_beta = pd.Series([beta(returns[i-window:i], benchmark[i-window:i])
+                             for i in range(window, len(returns))], index=returns[window:].index)
     if plot:
-        fig = px.line(merged['rolling_beta'], title="Beta móvel")
-        overall_beta = beta(merged.iloc[:, 0], merged.iloc[:, 1])
+        fig = px.line(rolling_beta, title="Beta móvel")
+        overall_beta = beta(returns, benchmark)
         fig.update_layout(shapes=[
             dict(
                 type='line',
@@ -99,7 +91,7 @@ def rolling_beta(returns, benchmark, window, plot=True):
         fig.update_xaxes(title_text='Tempo')
         fig.update_yaxes(title_text='Beta móvel: ' + str(window) + ' períodos')
         fig.show()
-    return merged['rolling_beta']
+    return rolling_beta
 
 
 def rolling_sharpe(returns, window, risk_free=0, plot=True):
