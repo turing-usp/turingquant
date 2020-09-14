@@ -102,7 +102,6 @@ def rolling_beta(returns, benchmark, window, plot=True):
     return merged['rolling_beta']
 
 
-# %%
 def rolling_sharpe(returns, window, risk_free=0, plot=True):
     """
     Plota o beta móvel para um ativo e um benchmark de referência, na forma de séries de retornos.
@@ -149,7 +148,6 @@ def rolling_sharpe(returns, window, risk_free=0, plot=True):
     return rolling_sharpe
 
 
-# %%
 def test_metrics():
     """
     Essa função define uma série aleatória de 50 elementos de retornos de um ativo fictício e de um índice de mercado e, a partir deles,
