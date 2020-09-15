@@ -140,6 +140,52 @@ def rolling_sharpe(returns, window, risk_free=0, plot=True):
     return rolling_sharpe
 
 
+def rolling_sharpe(returns, window, risk_free=0, plot=True):
+    """
+    Plota o beta móvel para um ativo e um benchmark de referência, na forma de séries de retornos.
+
+    Parâmetros:
+        returns (array): série de retornos para o qual o Sharpe Ratio será calculado.
+        window (int): janela móvel para calcular o Sharpe ao longo do tempo.
+        risk_free (float): valor da taxa livre de risco para cálculo do Sharpe.
+        plot (bool): se `True`, plota um gráfico de linha com o Sharpe ao longo do tempo.
+
+    Retorna:
+        rolling_beta (pd.Series): uma série com os valores do Beta para os últimos `window` dias.
+            A série não possui os `window` primeiros dias.
+
+    """
+    rolling_sharpe = pd.Series([sharpe_ratio(returns[i - window:i], risk_free)
+                                for i in range(window, len(returns))], returns[window:].index)
+    if plot:
+        fig = px.line(rolling_sharpe, title="Sharpe móvel")
+        overall_sharpe = sharpe_ratio(returns, risk_free)
+        fig.update_layout(shapes=[
+            dict(
+                type='line',
+                xref='paper', x0=0, x1=1,
+                yref='y', y0=overall_sharpe, y1=overall_sharpe,
+                line=dict(
+                    color='grey',
+                    width=2,
+                    dash='dash'
+                )
+            )
+        ], annotations=[
+            dict(
+                text='sharpe total: %.3f' % overall_sharpe,
+                xref='paper', x=0.05,
+                yref='y', y=overall_sharpe,
+                xanchor='left'
+            )
+        ])
+        fig.update_layout(showlegend=False)
+        fig.update_xaxes(title_text='Tempo')
+        fig.update_yaxes(title_text='Sharpe móvel: ' + str(window) + ' períodos')
+        fig.show()
+    return rolling_sharpe
+
+
 def test_metrics():
     """
     Essa função define uma série aleatória de 50 elementos de retornos de um ativo fictício e de um índice de mercado e, a partir deles,
