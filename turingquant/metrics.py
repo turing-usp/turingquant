@@ -48,6 +48,31 @@ def alpha(end_price, dps, start_price):
     return(end_price + dps - start_price) / start_price
 
 
+def drawdown(return_series, plot=True):
+    """
+    Calcula e plota o drawdown percentual para uma série de retornos.
+
+    Parâmetros:
+        return_series (pd.Series): série de retornos para o qual será calculado o Drawdown.
+        plot (bool): se `True`, plota um gráfico de linha com o Drawdown ao longo do tempo.
+
+    Retorna:
+        drawdowns (pd.Series): uma série com os valores percentuais do Drawdown.
+    """
+
+    wealth_index = 1000 * (1 + return_series).cumprod()
+    previous_peaks = wealth_index.cummax()
+    drawdowns = pd.Series((wealth_index - previous_peaks)/previous_peaks, name='Drawdown')
+    
+    if plot:
+        fig = px.line(drawdowns, x=drawdowns.index, y='Drawdown', title='Drawdown')
+        fig.update_xaxes(title_text='Tempo')
+        fig.update_yaxes(title_text='Drawdown (%)')
+        fig.show()
+
+    return drawdowns
+
+
 def rolling_beta(returns, benchmark, window, plot=True):
     """
     Plota o beta móvel para um ativo e um benchmark de referência, na forma de séries de retornos.
