@@ -224,3 +224,34 @@ def test_metrics():
 
     print("Sharpe: ", sharpe_ratio(returns))
     print("Beta: ", beta(returns, market))
+
+def ewma_volatility(close_prices,ret,window,plot=True):
+    if ret == 'log':
+        returns = np.log(close_prices/close_prices.shift(1))
+    if ret == 'simp':
+        returns = close_prices.pct_change()
+    ewma_volatility = returns.ewm(span=window).std()
+    ewma_volatility = pd.Series.to_frame(ewma_volatility)
+    if plot == True:
+        plt.plot(ewma_volatility)
+        plt.title("Média Móvel Exponencial")
+        plt.show()
+        return ewma_volatility
+    if plot == False:
+        return ewma_volatility
+        
+def rolling_std(close_prices,ret,window,plot=True):
+    if ret == 'log':
+        returns = np.log(close_prices/close_prices.shift(1))
+    if ret == 'simp':
+        returns = close_prices.pct_change()
+    rolling_std = returns.rolling(window).std()
+    rolling_std = pd.Series.to_frame(rolling_std)
+    if plot == True:
+        plt.plot(rolling_std)
+        plt.title("Desvio Padrão Móvel")
+        plt.show()
+        return rolling_std
+    if plot == False:
+        return rolling_std
+    
