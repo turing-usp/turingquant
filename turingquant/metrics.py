@@ -173,3 +173,66 @@ def rolling_sharpe(returns, window, risk_free=0, plot=True):
         fig.update_yaxes(title_text='Sharpe móvel: ' + str(window) + ' períodos')
         fig.show()
     return rolling_sharpe
+
+
+def ewma_volatility(close_prices,return_type,window,plot=True):
+    """
+    Essa função possibilita a visualização da volatilidade a partir do cálculo da EWMA e da plotagem do gráfico 
+    dessa métrica ao longo de um período.
+
+    Parâmetros:
+        close_prices (pd.DataFrame): série de preços de fechamento que será utilizado de base para o cálculo da EWMA;
+        return_type (string): tipo de retorno (simple - 'simp' ou logarítmico - 'log') que será utilizado de base para cálculo;
+        window (int): janela móvel para cálculo da EWMA;
+        plot (bool): se True, plota o gráfico de linha da EWMA ao longo do tempo
+
+    Retorna:
+        ewma_volatility (pd.DataFrame): um dataframe indexado à data com os valores de EWMA dos últimos window dias
+    """
+    if return_type == 'log':
+        returns = np.log(close_prices/close_prices.shift(1))
+    elif return_type == 'simp':
+        returns = close_prices.pct_change()
+    else:
+        raise ValueError("Tipo de retorno inválido")
+    ewma_volatility = returns.ewm(span=window).std()
+    ewma_volatility = pd.Series.to_frame(ewma_volatility)
+    if plot:
+        fig = px.line(ewma_volatility,x=ewma_volatility.index,y='Close',title='EWMA')
+        fig.update_xaxes(title_text='Tempo')
+        fig.update_yaxes(title_text='EWMA')
+        fig.show() 
+        return ewma_volatility
+    if plot == False:
+        return ewma_volatility
+
+def rolling_std(close_prices,return_type,window,plot=True):
+    """
+    Essa função possibilita a visualização da volatilidade a partir do cálculo da desvio padrão móvel e da plotagem do gráfico dessa
+    métrica ao longo de um período.  
+
+    Parâmetros:
+        close_prices (pd.DataFrame): série de preços de fechamento que será utilizado de base para o cálculo do desvio padrão móvel;
+        return_type (string): tipo de retorno (simple - 'simp' ou logarítmico - 'log') que será utilizado de base para cálculo;
+        window (int): janela móvel para cálculo do desvio padrão móvel;
+        plot (bool): se True, plota o gráfico de linha do desvio padrão móvel ao longo do tempo
+
+    Retorna:
+        rolling_std (pd.DataFrame): um dataframe indexado à data com os valores de desvio padrão móvel dos últimos window dias
+    """
+    if return_type == 'log':
+        returns = np.log(close_prices/close_prices.shift(1))
+    elif return_type == 'simp':
+        returns = close_prices.pct_change()
+    else:
+        raise ValueError("Tipo de retorno inválido")
+    rolling_std = returns.rolling(window).std()
+    rolling_std = pd.Series.to_frame(rolling_std)
+    if plot:
+        fig = px.line(rolling_std, x=rolling_std.index, y='Close',title='Desvio Padrão Móvel')
+        fig.update_xaxes(title_text='Tempo')
+        fig.update_yaxes(title_text='Desvio padrão móvel')
+        fig.show()
+        return rolling_std
+    if plot == False:
+        return rolling_std

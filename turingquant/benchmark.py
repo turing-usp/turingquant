@@ -1,9 +1,8 @@
 """Módulo para comparação e benchmarking de ativos e retornos."""
 
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 from datetime import datetime
-from matplotlib.ticker import PercentFormatter
 from pandas_datareader import data
 
 
@@ -24,11 +23,16 @@ def benchmark(ticker, start: datetime, end: datetime, source='yahoo', plot=True)
     """
 
     asset = data.DataReader(ticker, data_source=source, start=start, end=end)
-    returns_daily = asset['Close'].pct_change().fillna(0)
-    cumulative = pd.DataFrame.cumprod(1 + returns_daily) - 1
+    asset['Returns'] = asset['Close'].pct_change().fillna(0)
+    asset['Cumulative Returns'] = pd.DataFrame.cumprod(1 + asset['Returns']) - 1
+
     if plot:
-        cumulative.plot()
-    return cumulative
+        fig = px.line(asset, x=asset.index, y='Cumulative Returns', title='Retorno cumulativo ' + ticker)
+        fig.update_xaxes(title_text='Tempo')
+        fig.update_yaxes(title_text='Retorno cumulativo')
+        fig.show()
+
+    return asset['Cumulative Returns']
 
 
 def benchmark_ibov(start: datetime, end: datetime, source='yahoo', plot=True):
