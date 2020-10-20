@@ -1,5 +1,5 @@
-# Esse programa tem como objetivo coletar informações de ações do
-# mercado financeiro
+"""Módulo para coletar informações de ações do mercado financeiro."""
+
 import pandas as pd
 import numpy as np
 

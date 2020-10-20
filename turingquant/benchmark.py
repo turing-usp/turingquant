@@ -1,3 +1,5 @@
+"""Módulo para comparação e benchmarking de ativos e retornos."""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
