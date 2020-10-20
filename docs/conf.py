@@ -51,8 +51,10 @@ language = 'pt_BR'
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-autosummary_generate = True
+# Napoleon settings
 
+napoleon_numpy_docstring = False
+# napoleon_use_param = False
 
 # -- Options for HTML output -------------------------------------------------
 

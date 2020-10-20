@@ -18,12 +18,13 @@ def daily(key, ticker, br=True):
     em bolsa com melhor formatação de dados que a biblioteca
     alpha_vantage.
 
-    key[str]:    recebe a chave de uso do AlphaVantage
+    Args:
+        key (str): recebe a chave de uso do AlphaVantage
+        ticker (str): recebe o ticker do papel que será obtido
+        br (str): se `True`, adiciona ".SA" ao final do ticker, necessário para papéis brasileiros
 
-    ticker[str]: recebe o ticker do papel que será obtido
-
-    br[bool]:    se True, adiciona ".SA" ao final do ticker, necessário para
-                 papeis brasileiros
+    Returns:
+        pd.DataFrame: um dataframe contendo a cotação dia a dia do ativo.
     """
 
     if br:
@@ -53,14 +54,14 @@ def intraday(key, ticker, br=True, interval="1min"):
     um produto negociado em bolsa com melhor formatação de dados que a
     biblioteca alpha_vantage.
 
-    key[str]:      recebe a chave de uso do AlphaVantage
+    Args:
+        key (str): recebe a chave de uso do AlphaVantage
+        ticker(str): recebe o ticker do papel que será obtido
+        br(bool): se `True`, adiciona ".SA" ao final do ticker, necessário para papeis brasileiros.
+        interval(str): recebe o período entre cada informação (1min, 5min, 15min, 30min, 60min)
 
-    ticker[str]:   recebe o ticker do papel que será obtido
-
-    br[bool]:      se True, adiciona ".SA" ao final do ticker, necessário para
-                   papeis brasileiros, se False, pesquisa o que foi passado em ticker
-
-    interval[str]: recebe o período entre cada informação (1min, 5min, 15min, 30min, 60min)
+    Returns:
+        pd.DataFrame: DataFrame contendo a cotação intraday dos últimos 5 dias.
     """
 
     ts = TimeSeries(key=key, output_format='pandas')
@@ -85,8 +86,7 @@ def intraday(key, ticker, br=True, interval="1min"):
 
 def get_fundamentus(ticker):
     """
-    Essa função obtém os dados patrimoniais de empresas por meio do site
-    fundamentus.com.br
+    Essa função obtém os dados patrimoniais de empresas por meio do site `fundamentus.com.br`.
     """
 
     tickers = []
@@ -258,7 +258,7 @@ def get_tickers(setor="Todos"):
     if setor == "Todos":
         lista_setores = list(setores.keys())
     elif isinstance(setor, str):
-        if setores.has_key(setor):
+        if setores in setor:
             lista_setores.append(ticker)
         else:
             print("Esse setor não existe")
@@ -385,6 +385,7 @@ def get_cashflow(symbol):
     url = 'https://finance.yahoo.com/quote/' + symbol + '/cash-flow'
     return get_financials(url).drop(['ttm'], axis=0)
 
+
 def get_sp500_tickers():
     """
     Essa função obtem todas o ticker de todas as ações do S&P 500.
@@ -392,7 +393,7 @@ def get_sp500_tickers():
     resp = requests.get('http://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
     soup = BeautifulSoup(resp.text, 'html.parser')
     table = soup.find('table', {'class': 'wikitable sortable'})
-    
+
     tickers = []
     for row in table.findAll('tr')[1:]:
         ticker = row.findAll('td')[0].text
@@ -401,6 +402,7 @@ def get_sp500_tickers():
     tickers = [s.replace('\n', '') for s in tickers]
 
     return tickers
+
 
 def get_annual_hpr(ticker, period=252):
     """
@@ -431,4 +433,3 @@ def get_annual_hpr(ticker, period=252):
         income + value - value.shift(-1)) / value.shift(-1)
 
     return holding_period_return
-    

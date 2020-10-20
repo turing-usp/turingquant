@@ -12,13 +12,15 @@ def benchmark(ticker, start: datetime, end: datetime, source='yahoo', plot=True)
     Essa função fornece um plot de retorno acumulado de um ativo ao longo de um dado intervalo de tempo, definido pelos parâmetros start e end.
     Os dados são coletados da API do yahoo, caso haja dados faltantes, os retornos são contabilizados como nulos.
 
-    ticker[str]: recebe o ticker do papel que será obtido
+    Args:
+        ticker (str): recebe o ticker do papel que será obtido.
+        start (datetime): início do intervalo.
+        end (datetime): final do intervalo.
+        plot (bool): opcional; exibe o gráfico caso `True`.
 
-    start[datetime]: início do intervalo
+    Returns:
+        pd.series: uma série de ativos indexados com o tempo com o retorno cumulativo para o período.
 
-    end[datetime]: final do interval
-
-    plot[bool]: (default = True) se True, realiza o plot
     """
 
     asset = data.DataReader(ticker, data_source=source, start=start, end=end)
@@ -33,11 +35,13 @@ def benchmark_ibov(start: datetime, end: datetime, source='yahoo', plot=True):
     """
     Essa função produz um plot da evolução do Índice Bovespa ao longo de um dado intervalo, definido pelos parâmetros start e end.
 
-    start[datetime]: início do intervalo
+    Args:
+        start (datetime): início do intervalo.
+        end (datetime): final do intervalo.
+        plot (bool): opcional; exibe o gráfico caso `True`.
 
-    end[datetime]: final do interval
-
-    plot[bool]: (default = True) se True, realiza o plot
+    Returns:
+        pd.series: uma série temporal com o retorno acumulado do Ibovespa para o período.
     """
 
     return benchmark('^BVSP', start=start, end=end, source=source, plot=plot)
@@ -47,11 +51,13 @@ def benchmark_sp500(start: datetime, end: datetime, source='yahoo', plot=True):
     """
     Essa função produz um plot da evolução do Índice S&P500 ao longo de um dado intervalo, definido pelos parâmetros start e end.
 
-    start[datetime]: início do intervalo
+    Args:
+        start (datetime): início do intervalo.
+        end (datetime): final do intervalo.
+        plot (bool): opcional; exibe o gráfico caso `True`.
 
-    end[datetime]: final do interval
-
-    plot[bool]: (default = True) se True, realiza o plot
+    Returns:
+        pd.series: uma série temporal com o retorno acumulado do S&P500 para o período.
     """
 
     return benchmark('^GSPC', start=start, end=end, source=source, plot=plot)
