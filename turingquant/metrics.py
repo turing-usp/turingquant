@@ -211,7 +211,7 @@ def ewma_volatility(close_prices, return_type, window, plot=True):
         return ewma_volatility
 
 
-def garman_klass_volatility(high_prices, low_prices, close_prices, open_prices, window=60, time_scale=1, plot=True):
+def garman_klass_volatility(high_prices, low_prices, close_prices, open_prices, window, time_scale=1, plot=True):
     """
     Estima a volatilidade a partir dos seguintes preços: alta, baixa, abertura e fechamento
 
@@ -284,7 +284,7 @@ def garman_klass_volatility(high_prices, low_prices, close_prices, open_prices, 
     return garman_klass_vol
 
 
-def parkinson_volatility(high_prices, low_prices, window=60, time_scale=1, plot=True):
+def parkinson_volatility(high_prices, low_prices, window, time_scale=1, plot=True):
     """
     Estimando a volatilidade a partir dos preços de Alta e de Baixa
 
