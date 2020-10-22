@@ -61,23 +61,21 @@ def alpha(start_price, end_price, dps):
 def drawdown(return_series, plot=True):
     """
     Calcula e plota o drawdown percentual para uma série de retornos.
-
     Args:
-        return_series (pd.Series): série de retornos para o qual será calculado o Drawdown.
-        plot (bool): se `True`, plota um gráfico de linha com o Drawdown ao longo do tempo.
-
+        return_series (pd.Series): série de retornos para a qual será calculado o drawdown.
+        plot (bool): se `True`, plota o gráfico de underwater (drawdown consoante o tempo).
     Returns:
         pd.Series: uma série com os valores percentuais do Drawdown.
     """
 
-    wealth_index = 1000 * (1 + return_series).cumprod()
-    previous_peaks = wealth_index.cummax()
-    drawdowns = pd.Series((wealth_index - previous_peaks) /
-                          previous_peaks, name='Drawdown')
+    cum_returns = (1 + return_series).cumprod()
+    peeks = cum_returns.cummax()
+    drawdowns = pd.Series((cum_returns/peeks - 1)*100,
+                          name='Drawdown')
 
     if plot:
-        fig = px.line(drawdowns, x=drawdowns.index,
-                      y='Drawdown', title='Drawdown')
+        fig = px.area(drawdowns, x=drawdowns.index,
+                      y='Drawdown', title='Underwater')
         fig.update_xaxes(title_text='Tempo')
         fig.update_yaxes(title_text='Drawdown (%)')
         fig.show()
