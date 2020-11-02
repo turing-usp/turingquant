@@ -348,7 +348,7 @@ def rolling_std(close_prices, return_type, window, plot=True):
 
     Parâmetros:
         close_prices (pd.DataFrame): série de preços de fechamento que será utilizado de base para o cálculo do desvio padrão móvel;
-        return_type (string): tipo de retorno (simple - 'simp' ou logarítmico - 'log') que será utilizado de base para cálculo;
+        return_type (string): tipo de retorno (simples - 'simp' ou logarítmico - 'log') que será utilizado de base para cálculo;
         window (int): janela móvel para cálculo do desvio padrão móvel;
         plot (bool): se True, plota o gráfico de linha do desvio padrão móvel ao longo do tempo
 
@@ -372,3 +372,32 @@ def rolling_std(close_prices, return_type, window, plot=True):
         return rolling_std
     if plot == False:
         return rolling_std
+<<<<<<< HEAD
+=======
+
+def retorno(close_prices,return_type='log',cumulative=False):
+    """
+    Essa função permite o cálculo rápido do retorno de uma ação ao longo do tempo.
+
+    Parâmetros:
+        close_prices (pd.DataFrame): série de preços de fechamento que será utilizada de base para o cálculo do retorno;
+        return_type (string): tipo de retorno (simples - 'simp' ou logarítmico - 'log') a ser calculado;
+        cumulative (bool): se True, calculará o retorno cumulativo
+
+    Retorna:
+        returns (pd.Series): série com os valores do retorno ao longo do tempo
+    """
+    if return_type == "log":
+        returns = np.log(close_prices/close_prices.shift(1))
+        cumulative_returns =  returns.cumsum()
+    elif return_type == "simp":
+        returns = close_prices.pct_change()
+        cumulative_returns = (returns + 1).cumprod()-1
+    else:
+        raise ValueError("Tipo de retorno inválido")
+    if cumulative:
+        return cumulative_returns
+    if not cumulative:
+        return returns
+    
+>>>>>>> 2c52013... adiciona função para cálculo do retorno
