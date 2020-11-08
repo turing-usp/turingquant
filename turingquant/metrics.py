@@ -372,32 +372,43 @@ def rolling_std(close_prices, return_type, window, plot=True):
         return rolling_std
     if plot == False:
         return rolling_std
-<<<<<<< HEAD
-=======
 
 def retorno(close_prices,return_type='log',cumulative=False):
     """
     Essa função permite o cálculo rápido do retorno de uma ação ao longo do tempo.
 
-    Parâmetros:
+    Args:
         close_prices (pd.DataFrame): série de preços de fechamento que será utilizada de base para o cálculo do retorno;
         return_type (string): tipo de retorno (simples - 'simp' ou logarítmico - 'log') a ser calculado;
         cumulative (bool): se True, calculará o retorno cumulativo
 
-    Retorna:
+    Returns:
         returns (pd.Series): série com os valores do retorno ao longo do tempo
     """
-    if return_type == "log":
+    if tipo == "log":
         returns = np.log(close_prices/close_prices.shift(1))
+    elif tipo == "simp":
+        returns = close_prices.pct_change()
+    else:
+        raise ValueError("Tipo de retorno inválido")
+    return returns
+ 
+def cumulative_returns(returns,return_type):
+    """
+    Essa função permite o cálculo do retorno cumulativo ao longo do tempo.
+
+    Args:
+        returns (pd.Series): série de retornos da ação ao longo do tempo;
+        return_type (string): tipo de retorno (simples - 'simp' ou logarítmico - 'log') presente na série.
+
+    Returns:
+        cumulative_returns (pd.Series): série com os valores de retorno cumulativo ao longo do tempo
+    """
+    if return_type == "log":
         cumulative_returns =  returns.cumsum()
     elif return_type == "simp":
-        returns = close_prices.pct_change()
         cumulative_returns = (returns + 1).cumprod()-1
     else:
         raise ValueError("Tipo de retorno inválido")
-    if cumulative:
-        return cumulative_returns
-    if not cumulative:
-        return returns
+    return cumulative_returns
     
->>>>>>> 2c52013... adiciona função para cálculo do retorno
