@@ -385,9 +385,9 @@ def retorno(close_prices,return_type='log',cumulative=False):
     Returns:
         returns (pd.Series): série com os valores do retorno ao longo do tempo
     """
-    if tipo == "log":
+    if return_type == "log":
         returns = np.log(close_prices/close_prices.shift(1))
-    elif tipo == "simp":
+    elif return_type == "simp":
         returns = close_prices.pct_change()
     else:
         raise ValueError("Tipo de retorno inválido")
