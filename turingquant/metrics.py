@@ -373,7 +373,7 @@ def rolling_std(close_prices, return_type, window, plot=True):
     if plot == False:
         return rolling_std
 
-def retorno(close_prices,return_type='log',cumulative=False):
+def returns(close_prices,return_type='log',cumulative=False):
     """
     Essa função permite o cálculo rápido do retorno de uma ação ao longo do tempo.
 
