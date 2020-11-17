@@ -61,6 +61,7 @@ def alpha(start_price, end_price, dps):
 def drawdown(return_series, plot=True):
     """
     Calcula e plota o drawdown percentual para uma série de retornos.
+
     Args:
         return_series (pd.Series): série de retornos para a qual será calculado o drawdown.
         plot (bool): se `True`, plota o gráfico de underwater (drawdown consoante o tempo).
@@ -170,24 +171,23 @@ def rolling_sharpe(returns, window, risk_free=0, plot=True):
         ])
         fig.update_layout(showlegend=False)
         fig.update_xaxes(title_text='Tempo')
-        fig.update_yaxes(title_text='Sharpe móvel: ' +
-                         str(window) + ' períodos')
+        fig.update_yaxes(title_text='Sharpe móvel: ' + str(window) + ' períodos')
         fig.show()
     return rolling_sharpe
 
 
 def ewma_volatility(close_prices, return_type, window, plot=True):
     """
-    Essa função possibilita a visualização da volatilidade a partir do cálculo da EWMA e da plotagem do gráfico 
+    Essa função possibilita a visualização da volatilidade a partir do cálculo da EWMA e da plotagem do gráfico
     dessa métrica ao longo de um período.
 
-    Parâmetros:
+    Args:
         close_prices (pd.DataFrame): série de preços de fechamento que será utilizado de base para o cálculo da EWMA;
         return_type (string): tipo de retorno (simple - 'simp' ou logarítmico - 'log') que será utilizado de base para cálculo;
         window (int): janela móvel para cálculo da EWMA;
         plot (bool): se True, plota o gráfico de linha da EWMA ao longo do tempo
 
-    Retorna:
+    Returns:
         ewma_volatility (pd.DataFrame): um dataframe indexado à data com os valores de EWMA dos últimos window dias
     """
     if return_type == 'log':
@@ -205,7 +205,7 @@ def ewma_volatility(close_prices, return_type, window, plot=True):
         fig.update_yaxes(title_text='EWMA')
         fig.show()
         return ewma_volatility
-    if plot == False:
+    if plot is False:
         return ewma_volatility
 
 
@@ -213,7 +213,7 @@ def garman_klass_volatility(high_prices, low_prices, close_prices, open_prices, 
     """
     Estima a volatilidade a partir dos seguintes preços: alta, baixa, abertura e fechamento
 
-    Parâmetros:
+    Args:
         high_prices (pd.DataFrame): série de preços de alta de uma ação
         low_prices (pd.DataFrame): série de preços de baixa de uma ação
         close_prices (pd.DataFrame): série de preços de fechamento de uma ação
@@ -222,7 +222,7 @@ def garman_klass_volatility(high_prices, low_prices, close_prices, open_prices, 
         time_scale (int): fator de escala da volatilidade, por padrão é 1 (diária)
         plot (bool): se 'True', plota um gráfico da volatilidade móvel
 
-    Retorna: 
+    Returns:
         garman_klass_vol (pd.Series): série das estimativas de volatildade
     """
     # Calculando parcelas internas da somatoria
@@ -286,14 +286,14 @@ def parkinson_volatility(high_prices, low_prices, window, time_scale=1, plot=Tru
     """
     Estimando a volatilidade a partir dos preços de Alta e de Baixa
 
-    Parâmetros:
+    Args:
         high (pd.DataFrame): série de preços de alta de uma ação
         low (pd.DataFrame): série de preços de baixa de uma ação
         window (int): janela das estimativa de volatilidade
         time_scale (int): fator de escala da volatilidade, por padrão é 1 (diária)
         plot (bool): se 'True', plota um gráfico da volatilidade móvel
 
-    Retorna: 
+    Returns:
         garman_klass_vol (pd.Series): série das estimativas de volatildade
 
     """
@@ -344,15 +344,15 @@ def parkinson_volatility(high_prices, low_prices, window, time_scale=1, plot=Tru
 def rolling_std(close_prices, return_type, window, plot=True):
     """
     Essa função possibilita a visualização da volatilidade a partir do cálculo da desvio padrão móvel e da plotagem do gráfico dessa
-    métrica ao longo de um período.  
+    métrica ao longo de um período.
 
-    Parâmetros:
+    Args:
         close_prices (pd.DataFrame): série de preços de fechamento que será utilizado de base para o cálculo do desvio padrão móvel;
         return_type (string): tipo de retorno (simples - 'simp' ou logarítmico - 'log') que será utilizado de base para cálculo;
         window (int): janela móvel para cálculo do desvio padrão móvel;
         plot (bool): se True, plota o gráfico de linha do desvio padrão móvel ao longo do tempo
 
-    Retorna:
+    Returns:
         rolling_std (pd.DataFrame): um dataframe indexado à data com os valores de desvio padrão móvel dos últimos window dias
     """
     if return_type == 'log':
@@ -370,10 +370,11 @@ def rolling_std(close_prices, return_type, window, plot=True):
         fig.update_yaxes(title_text='Desvio padrão móvel')
         fig.show()
         return rolling_std
-    if plot == False:
+    if plot is False:
         return rolling_std
 
-def returns(close_prices,return_type='log',cumulative=False):
+
+def returns(close_prices, return_type='log', cumulative=False):
     """
     Essa função permite o cálculo rápido do retorno de uma ação ao longo do tempo.
 
@@ -392,8 +393,9 @@ def returns(close_prices,return_type='log',cumulative=False):
     else:
         raise ValueError("Tipo de retorno inválido")
     return returns
- 
-def cumulative_returns(returns,return_type):
+
+
+def cumulative_returns(returns, return_type):
     """
     Essa função permite o cálculo do retorno cumulativo ao longo do tempo.
 
@@ -405,10 +407,9 @@ def cumulative_returns(returns,return_type):
         cumulative_returns (pd.Series): série com os valores de retorno cumulativo ao longo do tempo
     """
     if return_type == "log":
-        cumulative_returns =  returns.cumsum()
+        cumulative_returns = returns.cumsum()
     elif return_type == "simp":
         cumulative_returns = (returns + 1).cumprod()-1
     else:
         raise ValueError("Tipo de retorno inválido")
     return cumulative_returns
-    
