@@ -61,7 +61,7 @@ def alpha(start_price, end_price, dps):
 def drawdown(return_series, plot=True):
     """
     Calcula e plota o drawdown percentual para uma série de retornos.
-
+    
     Args:
         return_series (pd.Series): série de retornos para a qual será calculado o drawdown.
         plot (bool): se `True`, plota o gráfico de underwater (drawdown consoante o tempo).
@@ -178,7 +178,7 @@ def rolling_sharpe(returns, window, risk_free=0, plot=True):
 
 def ewma_volatility(close_prices, return_type, window, plot=True):
     """
-    Essa função possibilita a visualização da volatilidade a partir do cálculo da EWMA e da plotagem do gráfico
+    Essa função possibilita a visualização da volatilidade a partir do cálculo da EWMA e da plotagem do gráfico 
     dessa métrica ao longo de um período.
 
     Args:
@@ -222,7 +222,7 @@ def garman_klass_volatility(high_prices, low_prices, close_prices, open_prices, 
         time_scale (int): fator de escala da volatilidade, por padrão é 1 (diária)
         plot (bool): se 'True', plota um gráfico da volatilidade móvel
 
-    Returns:
+    Returns: 
         garman_klass_vol (pd.Series): série das estimativas de volatildade
     """
     # Calculando parcelas internas da somatoria
@@ -293,7 +293,7 @@ def parkinson_volatility(high_prices, low_prices, window, time_scale=1, plot=Tru
         time_scale (int): fator de escala da volatilidade, por padrão é 1 (diária)
         plot (bool): se 'True', plota um gráfico da volatilidade móvel
 
-    Returns:
+    Returns: 
         garman_klass_vol (pd.Series): série das estimativas de volatildade
 
     """
@@ -344,7 +344,7 @@ def parkinson_volatility(high_prices, low_prices, window, time_scale=1, plot=Tru
 def rolling_std(close_prices, return_type, window, plot=True):
     """
     Essa função possibilita a visualização da volatilidade a partir do cálculo da desvio padrão móvel e da plotagem do gráfico dessa
-    métrica ao longo de um período.
+    métrica ao longo de um período.  
 
     Args:
         close_prices (pd.DataFrame): série de preços de fechamento que será utilizado de base para o cálculo do desvio padrão móvel;
@@ -413,3 +413,15 @@ def cumulative_returns(returns, return_type):
     else:
         raise ValueError("Tipo de retorno inválido")
     return cumulative_returns
+
+def plot_allocation(dictionary):
+    """
+    Essa função permite a visualização da distribuição de pesos em um portfolio através da plotagem de um gráfico de pizza.
+
+    Args:
+        dictionary (dict): dicionário com o nome da ação e sua respectiva porcentagem na carteira, no formato ação:porcentagem.
+    """
+    labels = list(dictionary.keys())
+    values = list(dictionary.values())
+    fig = px.pie(values=values,names=labels)
+    fig.show()
