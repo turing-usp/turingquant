@@ -84,277 +84,280 @@ def intraday(key, ticker, br=True, interval="1min"):
     return data
 
 
-def get_fundamentus(ticker):
+def get_fundamentus(tickers):
     """
-    Essa função obtém os dados patrimoniais de empresas por meio do site `fundamentus.com.br`.
+    Essa função obtém os dados patrimoniais de empresas por meio do site fundamentus.com.br,
+    voltado para companias com papeis na B3.
+
+    Args:
+        tickers (str / list): string com tickers separados por espaço ou lista de tickers
+        
+    Returns:
+        pd.DataFrame: dataframe contendo os dados patrimoniais (linhas) para os tickers dados (colunas)
     """
 
-    tickers = []
-    if isinstance(ticker, str):
-        tickers.append(ticker)
-    elif isinstance(ticker, list):
-        tickers = ticker
-    else:
-        return
+    def fix_type(value):
+        if isinstance(value, str):
+            if value[-1] == '%':
+                value = value.replace(',', '.')
+                value = float(value[ :-1]) / 100
+            elif value == '-':
+                value = np.nan
+        return value
 
-    empresas = []
+    def format_keys(label):
+        to_replace = {
+            '?':'',   '$':'',   '.':'',
+            '(':'',   ')':'',   ' / ':'/',
+            '/ ':'/',
 
-    base_url = "https://www.fundamentus.com.br/detalhes.php?papel="
+            'í':'i', 'ú':'u', 'ã':'a',
+            'é':'e', 'õ':'o', 'ó':'o',
+            'ç':'c',
+
+            'balanco processado':'balanco data',
+            'data ult cot':'cotacao data',
+            'vol  med':'volume medio',
+
+            '52 sem':'12m', '12 meses':'12m',
+            '30 dias':'1m', 'dia':'1d'
+        }
+
+        label = label.lower()
+        for char in list(to_replace.keys()):
+            label = label.replace(char, to_replace[char])
+        return label
+
+    
+    if isinstance(tickers, str):
+        tickers = tickers.split()
+    
+    if not isinstance(tickers, list):
+        raise TypeError(f"Espera-se string ou lista de strings para `tickers`, não {type(tickers)}.")
+
+    base = "https://www.fundamentus.com.br/detalhes.php?papel="
+    header = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0)'}
+    final_df = pd.DataFrame()
 
     for ticker in tickers:
-        print("Coletando informações de " + ticker)
+        print(f"Coletando informações de '{ticker}'...")
 
-        url = base_url + ticker
-        try:
-            response = requests.get(url)
-
-            soup = BeautifulSoup(response.text, "html.parser")
-            tabelas = soup.find_all('table', class_="w728")
-            urls = soup.find_all('a')
-        except:
-            continue
-
-        if len(tabelas) > 0:
-            txt1 = list(BeautifulSoup(tabelas[0].prettify(),
-                                      "html.parser").find_all("span", class_="txt"))
-            txt2 = list(BeautifulSoup(tabelas[1].prettify(),
-                                      "html.parser").find_all("span", class_="txt"))
-            txt3 = list(BeautifulSoup(tabelas[2].prettify(),
-                                      "html.parser").find_all("span", class_="txt"))
-            txt4 = list(BeautifulSoup(tabelas[3].prettify(),
-                                      "html.parser").find_all("span", class_="txt"))
-            txt5 = list(BeautifulSoup(tabelas[4].prettify(),
-                                      "html.parser").find_all("span", class_="txt"))
-        else:
-            continue
-
-        # informações do papel
-        papel = txt1[1].string.replace('\n    ', '').replace('\n   ', '')
-        tipo = txt1[5].string.replace('\n    ', '').replace('\n   ', '')
-        nomeEmpresa = txt1[9].string.replace('\n    ', '').replace('\n   ', '')
-        setor = urls[14].string
-        subsetor = urls[15].string
-        vol_med_duas_sem = int(txt1[19].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        # informações de mercado
-        valor_de_mercado = int(txt2[1].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        valor_da_firma = int(txt2[5].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        ult_balanco = txt2[3].string.replace('\n', '').replace(' ', '')
-        nro_acoes = int(txt2[7].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        # indicadores
-        lpa = float(txt3[6].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
-        vpa = float(txt3[11].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
-        marg_bruta = float(txt3[16].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        marg_ebit = float(txt3[21].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        marg_liquida = float(txt3[26].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        ebit_ativo = float(txt3[31].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        roic = float(txt3[36].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        div_yield = float(txt3[39].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        roe = float(txt3[41].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        ev_ebit = float(txt3[44].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
-        liquidez_corr = float(txt3[46].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
-        giro_ativos = float(txt3[49].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
-        divBr_patr = float(txt3[51].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace(',', '.').replace('-', '0'))
-        cresc_rec = float(txt3[54].string.replace('\n', '').replace(' ', '').replace(
-            '.', '').replace(',', '.').replace('%', '').replace('-', '0')) / 100
-        # balanço patrimonial
-        ativo = int(txt4[2].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        div_bruta = int(txt4[4].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        disponibilidades = int(txt4[6].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        div_liquida = int(txt4[8].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        ativo_circulante = int(txt4[10].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        patr_liquido = int(txt4[12].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        # demonstrativos de resultado
-        rec_liq_12m = int(txt5[4].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('.', '').replace('-', '0'))
-        rec_liq_3m = int(txt5[6].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('.', '').replace('-', '0'))
-        ebit_12m = int(txt5[8].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        ebit_3m = int(txt5[10].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        lucro_liq_12m = int(txt5[12].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-        lucro_liq_3m = int(txt5[14].string.replace('\n', '').replace(
-            ' ', '').replace('.', '').replace('-', '0'))
-
-        empresa = {"Ticker": papel, "Tipo": tipo, "Nome": nomeEmpresa,
-                   "Setor": setor, "Subsetor": subsetor,
-                   "Vol méd (2m)": vol_med_duas_sem,
-                   "Valor de mercado": valor_de_mercado,
-                   "Valor da firma": valor_da_firma,
-                   "Ult. Balanço": ult_balanco,
-                   "Nro. Ações": nro_acoes, "LPA": lpa, "VPA": vpa,
-                   "Margem Bruta": marg_bruta, "Margem EBIT": marg_ebit,
-                   "Margem Líquida": marg_liquida, "EBIT por ativo": ebit_ativo,
-                   "ROIC": roic, "Div. Yield": div_yield, "ROE": roe,
-                   "EV/EBIT": ev_ebit, "Liquidez Corr.": liquidez_corr,
-                   "Giro Ativos": giro_ativos, "Divida bruta/Patr.": divBr_patr,
-                   "Cresc. Rec (5a)": cresc_rec, "Ativo": ativo,
-                   "Dívida bruta": div_bruta, "Dívida líquida": div_liquida,
-                   "Disponibilidades": disponibilidades,
-                   "Ativo circulante": ativo_circulante,
-                   "Patrim. Líquido": patr_liquido,
-                   "Receita Líq. 12m": rec_liq_12m,
-                   "Receita Líq. 3m": rec_liq_3m, "EBIT 12m": ebit_12m,
-                   "EBIT 3m": ebit_3m, "Lucro Líq. 12m": lucro_liq_12m,
-                   "Lucro Líq. 3m": lucro_liq_3m}
-        empresas.append(empresa)
-
+        url = base + ticker
+        response = requests.get(url, headers=header)
+        soup = BeautifulSoup(response.text, "html.parser")
+        tables = soup.find_all('table', class_="w728")
         time.sleep(1)
 
-    df = pd.DataFrame(empresas)
-    return df
+        if len(tables) == 0:
+            print(f"Nenhum papel '{ticker}' encontrado.")
+            continue
+        
+        keys = pd.Series(dtype=str)
+        values = pd.Series(dtype=str)
 
+        for t in range(len(tables)):
+            table = tables[t]
+            df = pd.read_html(str(table), thousands='.', decimal=',')[0]
+            
+            if t == 2:
+                df.drop(0, axis=0, inplace=True)
+                df[0] = df.apply(lambda row: 'oscilacao ' + str(row[0]), axis=1)                
+            elif t == 3:
+                df.drop(0, axis=0, inplace=True)
+            elif t == 4:
+                df.drop([0, 1], axis=0, inplace=True)
+                df[0] = df.apply(lambda row: row[0] + ' 12m', axis=1)
+                df[2] = df.apply(lambda row: row[2] + ' 3m', axis=1)
 
-def get_tickers(setor="Todos"):
-    """
-    Essa função obtém os tickers listados no site fundamentus.com.br, seja um setor
-    específico, uma lista de setores ou todos os tickers de todos os setores.
-    """
+            for c in range(0, df.shape[1], 2):
+                keys = pd.concat([keys, df.iloc[ : , c]], axis=0, ignore_index=True)
+                values = pd.concat([values, df.iloc[ : , c+1]], axis=0, ignore_index=True)
 
-    setores = {"Agropecuária": "42", "Água e Saneamento": "33", "Alimentos": "15",
-               "Bebidas": "16", "Comércio": "27", "Comércio2": "12",
-               "Comércio e Distribuição": "20", "Computadores e Equipamentos": "28",
-               "Construção e Engenharia": "13", "Diversos": "26",
-               "Embalagens": "6", "Energia Elétrica": "32",
-               "Equipamentos Elétricos": "9", "Exploração de Imóveis": "39",
-               "Financeiros": "35", "Fumo": "17", "Gás": "34",
-               "Holdings Diversificadas": "40", "Hoteis e Restaurantes": "24",
-               "Madeira e Papel": "5", "Máquinas e Equipamentos": "10",
-               "Materiais Diversos": "7", "Material de Transporte": "8",
-               "Mídia": "23", "Mineração": "2", "Outros": "41",
-               "Petróleo, Gás e Biocombustíveis": "1", "Previdência e Seguros": "38",
-               "Prods. de Uso Pessoal e de Limpeza": "18", "Programas e Serviços": "29",
-               "Químicos": "4", "Saúde": "19", "Securitizadoras de Recebíveis": "36",
-               "Serviços": "11", "Serviços Financeiros Diversos": "37",
-               "Siderurgia e Metalurgia": "3", "Tecidos, Vestuário e Calçados": "21",
-               "Telefonia Fixa": "30", "Telefonia Móvel": "31", "Transporte": "14",
-               "Utilidades Domésticas": "22", "Viagens e Lazer": "25"}
-
-    lista_setores = []
-    if setor == "Todos":
-        lista_setores = list(setores.keys())
-    elif isinstance(setor, str):
-        if setores in setor:
-            lista_setores.append(ticker)
-        else:
-            print("Esse setor não existe")
-            return []
-    elif isinstance(setor, list):
-        lista_setores = setor
-    else:
-        return []
-
-    tickers = []
-
-    for item in lista_setores:
-        try:
-            url = "https://www.fundamentus.com.br/resultado.php?setor=" + \
-                setores[item]
-            response = requests.get(url)
-        except:
-            print("Não foi possível coletar informações do setor: " + item)
+        company = pd.DataFrame({'keys':keys, ticker:values})
+        company[ticker] = company.apply(lambda row: fix_type(row[ticker]), axis=1)
+   
+        if final_df.empty:
+            final_df = company.copy()
             continue
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        tickers_bruto = soup.find('tbody').find_all("a")
-        for ticker in tickers_bruto:
-            tickers.append(ticker.string)
+        final_df = final_df.join(company.set_index('keys'), how='outer', on='keys')
+    
+    if not final_df.empty:
+        final_df['keys'] = final_df.apply(lambda row: format_keys((row['keys'])), axis=1)
+        final_df.set_index('keys', inplace=True, drop=True)
+        final_df.index.name = None
+
+        final_df.drop(['papel', 'oscilacao mês'], inplace=True, axis=0)
+        final_df.dropna(how='all', inplace=True)
+
+        pd.set_option("max_rows", final_df.shape[0])
+
+    return final_df
+
+
+def get_tickers(setores="Todos"):
+    """
+    Essa função obtém os tickers listados no site fundamentus.com.br consoante seus setores.
+    Observação: o 'setor' no site fundamentus.com.br corresponde ao 'subsetor' na B3,
+    e o 'subsetor' nesse site corresponde ao 'segmento' na B3.
+
+    Args:
+        setores (str / list): 'Todos' para considerar todos os setores ou lista com os setores desejados
+        
+    Returns:
+        list: lista com todos os tickers listados para os setores pedidos
+
+    """
+
+    setores_dict = {
+        'Agropecuária': 1,
+        'Água e Saneamento': 2,
+        'Alimentos Processados': 3,
+        'Análises e Diagnósticos': 4,
+        'Automóveis e Motocicletas': 5,
+        'Bebidas': 6,
+        'Comércio': 7,
+        'Comércio e Distribuição': 8,
+        'Computadores e Equipamentos': 9,
+        'Construção Civil': 10,
+        'Construção e Engenharia': 11,
+        'Diversos': 12,
+        'Embalagens': 13,
+        'Energia Elétrica': 14,
+        'Equipamentos': 15,
+        'Exploração de Imóveis': 16,
+        'Gás': 17,
+        'Holdings Diversificadas': 18,
+        'Hoteis e Restaurantes': 19,
+        'Intermediários Financeiros': 20,
+        'Madeira e Papel': 21,
+        'Máquinas e Equipamentos': 22,
+        'Materiais Diversos': 23,
+        'Material de Transporte': 24,
+        'Medicamentos e Outros Produtos': 25,
+        'Mídia': 26,
+        'Mineração': 27,
+        'Outros': 28,
+        'Petróleo, Gás e Biocombustíveis': 30,
+        'Previdência e Seguros': 31,
+        'Produtos de Uso Pessoal e de Limpeza': 32,
+        'Programas e Serviços': 33,
+        'Químicos': 34,
+        'Serviços Diversos': 36,
+        'Serviços Financeiros Diversos': 37,
+        'Siderurgia e Metalurgia': 38,
+        'Tecidos, Vestuário e Calçados': 39,
+        'Telecomunicações': 40,
+        'Transporte': 41,
+        'Utilidades Domésticas': 42,
+        'Viagens e Lazer': 43
+    }
+
+    if setores == 'Todos':
+        setores = list(setores_dict.keys())
+
+    if not isinstance(setores, list):
+        raise ValueError(f"Espera-se 'Todos' ou lista de strings para `setores`, não {setores}.")
+
+    header = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0)'}
+    base = "https://www.fundamentus.com.br/resultado.php?setor="
+    tickers = []
+
+    for setor in setores:
+        if setor in setores_dict:
+            time.sleep(1)
+            url = base + str(setores_dict[setor])
+            response = requests.get(url, headers=header)
+            soup = BeautifulSoup(response.text, "html.parser")
+            links = soup.find('tbody').find_all("a")
+
+            for link in links:
+                ticker = link.text
+                tickers.append(ticker)
+        else:
+            print(f"Setor '{setor}' não encontrado.")
+            continue
 
     tickers.sort()
+
     return tickers
 
 
-def get_ibov(atual=True):
+def get_ibov():
     """
-    Essa função obtém a composição atual do Índice Bovespa
+    Essa função obtém informações sobre a composição atual do Índice Bovespa
+    por meio do site da B3.
+
+    Returns:
+        pd.DataFrame: dataframe contendo ticker, nome, tipo, quantidade e participação 
+        das companias constituintes do índice
     """
 
     empresas = []
 
-    if atual:
-        url = "http://bvmf.bmfbovespa.com.br/indices/ResumoCarteiraQuadrimestre.aspx?Indice=IBOV&idioma=pt-br"
-        print("Coletando informações da B3")
+    header = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0)'}
+    url = "http://bvmf.bmfbovespa.com.br/indices/ResumoCarteiraQuadrimestre.aspx?Indice=IBOV&idioma=pt-br"
+    response = requests.get(url, headers=header)
+    soup = BeautifulSoup(response.text, "html.parser")
 
-        soup = ''
+    print("Coletando informações da B3...")
 
-        try:
-            response = requests.get(url)
+    for i in range(100):
+        id_linha = 'ctl00_contentPlaceHolderConteudo_grdResumoCarteiraPrevia_ctl00__' + \
+            str(i)
+        linha = soup.find_all(id=id_linha)
+        info = []
+        if len(linha) > 0:
+            info = list(BeautifulSoup(str(linha), "html.parser").find_all(
+                "span", class_="label"))
+            if len(info) == 5:
+                try:
+                    ticker = info[0].string
+                    nome = info[1].string
+                    tipo = info[2].string
+                    qtde = float(info[3].string.replace('.', ''))
+                    part = float(info[4].string.replace(',', '.'))
+                except:
+                    continue
 
-            soup = BeautifulSoup(response.text, "html.parser")
-        except:
-            return None
-
-        for i in range(100):
-            id_linha = 'ctl00_contentPlaceHolderConteudo_grdResumoCarteiraPrevia_ctl00__' + \
-                str(i)
-            linha = soup.find_all(id=id_linha)
-            info = []
-            if len(linha) > 0:
-                info = list(BeautifulSoup(str(linha), "html.parser").find_all(
-                    "span", class_="label"))
-                if len(info) == 5:
-                    try:
-                        ticker = info[0].string
-                        nome = info[1].string
-                        tipo = info[2].string
-                        qtde = float(info[3].string.replace('.', ''))
-                        part = float(info[4].string.replace(',', '.'))
-                    except:
-                        continue
-
-            if part < 99.0:
-                if len(info) > 0:
-                    empresa = {'Ticker': ticker, 'Nome': nome, 'Tipo': tipo,
-                               'Quantidade': qtde, 'Part.': part}
-
-                    empresas.append(empresa)
-            else:
-                continue
+        if part < 99.0:
+            if len(info) > 0:
+                empresa = {
+                    'Ticker':ticker,
+                    'Nome':nome,
+                    'Tipo':tipo, 
+                    'Quantidade':qtde,
+                    'Part.':part
+                }
+                empresas.append(empresa)
+        else:
+            continue
 
     return pd.DataFrame(empresas)
 
 
 def get_financials(url):
-    page_source = requests.get(url)
+    """
+    Função de suporte, base para as funções get_income_statement(), get_balance_sheet()
+    e get_cashflow().
+    """
 
-    soup_html = BeautifulSoup(page_source.text, 'html.parser')
-    table_soup = soup_html.find(
-        'div', class_="M(0) Whs(n) BdEnd Bdc($seperatorColor) D(itb)")
+    header = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0)'}
+    response = requests.get(url, headers=header)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    table_soup = soup.find('div', class_="M(0) Whs(n) BdEnd Bdc($seperatorColor) D(itb)")
 
     # Get Title Row
     headlines = table_soup.find('div', class_="D(tbr) C($primaryColor)")
     headlines = headlines.findAll('span')
     title_row = list()
+
     for line in headlines:
         title_row.append(line.text)
 
     table = pd.DataFrame(None, columns=title_row)
-    remaining_lines = table_soup.findAll(
-        'div', class_="D(tbr) fi-row Bgc($hoverBgColor):h")
+    remaining_lines = table_soup.findAll('div', class_="D(tbr) fi-row Bgc($hoverBgColor):h")
+
     for row in remaining_lines:
         columns = row.findChildren('div', recursive=False)
         line_values = list()
@@ -364,34 +367,85 @@ def get_financials(url):
             elif '-' in col.text and len(col.text) == 1:
                 value = np.nan
             else:
-                value = col.text
+                value = col.text                
             line_values.append(value)
         table.loc[len(table)] = line_values
+
     table = table.set_index(title_row[0])
+
     return table.T
 
 
-def get_income_statement(symbol):
-    url = 'https://finance.yahoo.com/quote/' + symbol + '/financials'
+def get_income_statement(ticker, br=True):
+    """
+    Obtém o Income Statement ou a Demonstração do Resultado do Exercício (DRE)
+    para a companhia do ticker desejado por meio do Yahoo! Finance.
+
+    Args:
+        ticker (str): recebe o ticker do papel que será obtido
+        br (str): se `True`, adiciona ".SA" ao final do ticker, necessário para papéis brasileiros
+        
+    Returns:
+        pd.DataFrame: dataframe com os dados do relatório nos últimos anos.
+    """
+    
+    if br:
+        ticker = ticker + '.SA'
+    url = 'https://finance.yahoo.com/quote/' + ticker + '/financials'
+    
     return get_financials(url).drop(['ttm'], axis=0)
 
 
-def get_balance_sheet(symbol):
-    url = 'https://finance.yahoo.com/quote/' + symbol + '/balance-sheet'
+def get_balance_sheet(ticker, br=True):
+    """
+    Obtém o Balance Sheet ou o Balanço Patrimonial para a companhia do ticker desejado
+    por meio do Yahoo! Finance.
+
+    Args:
+        ticker (str): recebe o ticker do papel que será obtido
+        br (str): se `True`, adiciona ".SA" ao final do ticker, necessário para papéis brasileiros
+        
+    Returns:
+        pd.DataFrame: dataframe com os dados do relatório nos últimos anos.
+    """
+
+    if br:
+        ticker = ticker + '.SA'        
+    url = 'https://finance.yahoo.com/quote/' + ticker + '/balance-sheet'
+
     return get_financials(url)
 
 
-def get_cashflow(symbol):
-    url = 'https://finance.yahoo.com/quote/' + symbol + '/cash-flow'
+def get_cash_flow(ticker, br=True):
+    """
+    Obtém o Cash Flow ou o Fluxo de Caixa para a companhia do ticker desejado
+    por meio do Yahoo! Finance.
+
+    Args:
+        ticker (str): recebe o ticker do papel que será obtido
+        br (str): se `True`, adiciona ".SA" ao final do ticker, necessário para papéis brasileiros
+        
+    Returns:
+        pd.DataFrame: dataframe com os dados do relatório nos últimos anos.
+    """
+
+    if br:
+        ticker = ticker + '.SA'
+    url = 'https://finance.yahoo.com/quote/' + ticker + '/cash-flow'
+
     return get_financials(url).drop(['ttm'], axis=0)
 
 
 def get_sp500_tickers():
     """
-    Essa função obtem todas o ticker de todas as ações do S&P 500.
+    Essa função obtém os tickers de todas as atuais constituientes do S&P500.
+
+    Returns:
+        list: lista com todos os tickers atuais do índice.
     """
-    resp = requests.get('http://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
-    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    response = requests.get('http://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
+    soup = BeautifulSoup(response.text, 'html.parser')
     table = soup.find('table', {'class': 'wikitable sortable'})
 
     tickers = []
