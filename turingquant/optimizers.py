@@ -25,7 +25,16 @@ class Markowitz:
         self.df = df_close
         self.num_portfolios = num_portfolios
         self.risk_free = risk_free
-        
+        self.wallets = self._generate_wallets()
+    
+    def _generate_wallets(self):
+        '''
+        Gera carteiras com pesos aleatórios.
+
+        Returns:
+            wallets (dict): dicionário contendo os valores 'weights', 'returns', 'vol' e 'sharpe_ratio'
+                            de todos os portfólios gerados 
+        '''
         # vetores de dados
         portfolio_weights = []
         portfolio_exp_returns = []
@@ -33,7 +42,7 @@ class Markowitz:
         portfolio_sharpe = []
         
         # retorno simples 
-        r = df.pct_change()
+        r = self.df.pct_change()
         mean_returns = r.mean() * 252
         
         # matriz de covariância 
@@ -41,7 +50,7 @@ class Markowitz:
 
         for i in range(self.num_portfolios):
             # gerando pesos aleatórios
-            k = np.random.rand(len(df.columns))
+            k = np.random.rand(len(self.df.columns))
             w = k / sum (k)
 
             # retorno
@@ -58,11 +67,13 @@ class Markowitz:
             portfolio_vol.append(vol)
             portfolio_sharpe.append(sharpe)
 
-        self.wallets = {'weights': portfolio_weights,
+        wallets = {'weights': portfolio_weights,
                   'returns': portfolio_exp_returns,
                   'vol':portfolio_vol,
                   'sharpe': portfolio_sharpe}
-
+    
+        return wallets
+        
     def plot_efficient_frontier(self, method = 'sharpe_ratio'):
         '''
         Plota gráfico com a fronteira eficiente dos portfólios gerados. 
@@ -135,3 +146,4 @@ class Markowitz:
             indice = np.array(returns).argmax()
 
         return weights[indice]
+    
