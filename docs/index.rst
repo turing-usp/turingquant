@@ -26,6 +26,7 @@ Módulos
    turingquant.metrics
    turingquant.benchmark
    turingquant.support
+   turingquant.optimizers
 
 Módulo metrics
 ==============
@@ -43,5 +44,11 @@ Módulo support
 ==============
 
 .. automodule:: turingquant.support
+   :members:
+
+Módulo optimizers
+==============
+
+.. automodule:: turingquant.optimizers
    :members:
 
