@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="turingquant",
-    version="0.1.9",
+    version="0.2.0",
     packages=find_packages(),
     install_requires=["pandas", "pandas_datareader", "numpy", "matplotlib", "alpha_vantage", "bs4", "plotly", "yfinance"],
 
