@@ -26,3 +26,4 @@ No código você pode verificar o que cada função retorna e a descrição de c
 - [Guilherme Fernandes](https://github.com/aateg)
 - [Lucas Leme](https://github.com/lucas-leme)
 - [Noel Viscome Eliezer](https://github.com/anor4k)
+- [Thalissa Reis](https://github.com/thalissa-reis)
