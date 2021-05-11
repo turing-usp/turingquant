@@ -51,6 +51,25 @@ def beta(returns, benchmark):
 
     return cov / benchmark_vol
 
+def capm(returns, market_returns, risk_free):
+    """
+    Essa função, com o fornecimento dos retornos de um portfólio ou ativo, dos retornos do mercado e da retorno sem risco, 
+    calcula o retorno esperado pela abordagem CAPM. Essa abordagem considera o mercado (benchmark) e as relações com os ativos 
+    como parâmetro para estimar o retorno esperado.
+
+    Args:
+        returns (pd.Series ou np.array): vetor de retornos
+        market_returns (pd.Series ou np.array): vetor de retornos do mercado ou benchmark
+        risk_free (float): retorno livre de risco
+        
+    Returns:
+        float: retorno esperado pela abordagem CAPM
+    """
+    beta = beta(returns, market_returns)
+    expected_market_returns = market_returns.mean()
+    expected_returns = risk_free + beta * (expected_market_returns - risk_free)
+    return expected_returns
+
 
 def alpha(start_price, end_price, dividends):
     """
