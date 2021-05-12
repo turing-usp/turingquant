@@ -109,6 +109,7 @@ class Markowitz:
 
         plt.scatter(vol, returns, c = sharpe, cmap = 'viridis')
         plt.scatter(X_axis, y_axis, c = 'red', s = 50)
+        plt.colorbar(label = 'Sharpe Ratio')
         plt.title("Efficient Frontier")
         plt.xlabel("Volatility")
         plt.ylabel("Expected return")
