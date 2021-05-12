@@ -1,2 +1,2 @@
-from . import benchmark, metrics, support, optimizers
+from . import benchmark, metrics, support, optimizers, plot_metrics
 
