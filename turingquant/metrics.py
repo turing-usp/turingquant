@@ -204,14 +204,13 @@ def rolling_sharpe(returns, window, risk_free=0, plot=False):
     return rolling_sharpe
 
 
-def ewma_volatility(close_prices, return_type, window, plot=False):
+def ewma_volatility(returns, window, plot=False):
     """
     Essa função possibilita a visualização da volatilidade a partir do cálculo da EWMA e da plotagem do gráfico 
     dessa métrica ao longo de um período.
 
     Args:
-        close_prices (pd.DataFrame): série de preços de fechamento que será utilizado de base para o cálculo da EWMA;
-        return_type (string): tipo de retorno (simple - 'simp' ou logarítmico - 'log') que será utilizado de base para cálculo;
+        returns (pd.DataFrame): série de retornos para o qual o EWMA será calculado.
         window (int): janela móvel para cálculo da EWMA;
         plot (bool): se True, plota o gráfico de linha da EWMA ao longo do tempo
 
@@ -219,7 +218,6 @@ def ewma_volatility(close_prices, return_type, window, plot=False):
         ewma_volatility (pd.DataFrame): um dataframe indexado à data com os valores de EWMA dos últimos window dias
     """
 
-    returns = returns(close_prices, return_type)
 
     ewma_volatility = returns.ewm(span=window).std()
     ewma_volatility = pd.Series.to_frame(ewma_volatility)
