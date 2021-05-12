@@ -22,9 +22,7 @@ def sharpe_ratio(returns, risk_free=0, time_scale=252):
     expected_returns = returns.mean()
     risk = returns.std()
 
-    sharpe = (expected_returns - risk_free) / risk
-
-    sharpe = sharpe * np.sqrt(time_scale)
+    sharpe = (expected_returns * time_scale - risk_free) / (risk * np.sqrt(time_scale))
 
     return sharpe
 
