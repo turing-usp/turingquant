@@ -45,7 +45,7 @@ def beta(returns, benchmark):
 
     return cov / benchmark_vol
 
-def capm(returns, market_returns, risk_free):
+def capm(returns, market_returns, risk_free=0):
     """
     Essa função, com o fornecimento dos retornos de um portfólio ou ativo, dos retornos do mercado e da retorno sem risco, 
     calcula o retorno esperado pela abordagem CAPM. Essa abordagem considera o mercado (benchmark) e as relações com os ativos 
@@ -59,9 +59,8 @@ def capm(returns, market_returns, risk_free):
     Returns:
         float: retorno esperado pela abordagem CAPM
     """
-    beta = beta(returns, market_returns)
     expected_market_returns = market_returns.mean()
-    expected_returns = risk_free + beta * (expected_market_returns - risk_free)
+    expected_returns = risk_free + beta(returns, market_returns) * (expected_market_returns - risk_free)
     return expected_returns
 
 
