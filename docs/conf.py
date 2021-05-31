@@ -23,7 +23,7 @@ author = 'Grupo Turing'
 master_doc = 'index'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.1'
+release = '0.2.2'
 
 
 # -- General configuration ---------------------------------------------------
