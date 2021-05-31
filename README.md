@@ -1,12 +1,12 @@
 # Turing Quant
 
-`turingquant` é uma biblioteca para coleta, análise e backtesting de ativos e estratégias financeiras. O projeto está em desenvolvimento ativo pelos membros de Finanças Quantitativas do [Grupo Turing](https://github.com/grupoturing).
+`turingquant` é uma biblioteca para coleta, análise e backtesting de ativos e estratégias financeiras. O projeto está em desenvolvimento ativo pelos membros de Finanças Quantitativas do [Turing USP](https://github.com/turing-usp).
 
 `pip install turingquant` instala a última versão estável.
 
 ## Utilização
 
-A biblioteca conta com 3 módulos: `metrics`, `benchmark`, e `support`.
+A biblioteca conta com 3 módulos: `metrics`, `benchmark`, `support` e `plot_metrics`.
 
 `support` possui funções para obter dados fundamentalistas de empresas.
 
