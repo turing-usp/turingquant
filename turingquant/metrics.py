@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 import plotly.express as px
-
+from scipy import stats
 
 def sharpe_ratio(returns, risk_free=0, time_scale=252):
     """
@@ -432,3 +432,22 @@ def plot_allocation(dictionary):
     values = list(dictionary.values())
     fig = px.pie(values=values, names=labels)
     fig.show()
+
+def value_at_risk(returns, confidance_level = 0.95, window = 1, method = 'variance-covariance'):
+    
+    if method == 'variance-covariance':
+        mean = np.mean(returns)
+        
+        std = np.std(returns)
+        
+        var = stats.norm.ppf(1 - confidance_level, mean, std)
+        
+    elif method == 'historical':
+        returns = returns.sort_values(ascending = True)
+        
+        var = returns.quantile(1 - confidance_level)
+    
+    if window != 1:
+        var = var * np.sqrt(window)
+    
+    return var
