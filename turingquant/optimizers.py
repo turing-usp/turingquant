@@ -3,7 +3,84 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.cluster.hierarchy import linkage, leaves_list
 
+
+class HierarchicalRiskParity:
+    '''
+    Hierarchical risk parity is a portfolio optimization algorithm that uses unsupervised learning (machine learning).
+
+    Parâmetros:
+        cov_matrix (pd.DataFrame): Matrix de covariança de um portfólio.
+    '''
+    def __init__(self, cov_matrix: pd.DataFrame):
+
+        self._cov_matrix = cov_matrix
+        self._columns = cov_matrix.columns
+
+    def optimize(self):
+
+        seriation_columns = self._matrix_seriation()
+
+        weights = self._recursive_besection(seriation_columns)
+        
+        named_weights = self._mount_weights(weights)
+
+        return named_weights
+
+    def _matrix_seriation(self):
+
+        dendogram = linkage(self._cov_matrix, 'ward')
+
+        seriation_columns = leaves_list(dendogram)
+
+        return seriation_columns
+
+    def _recursive_besection(self, seriation_columns):
+
+        weights = pd.Series(1, index=seriation_columns)
+        parities = [seriation_columns]
+
+        while len(parities) > 0:
+            parities = [cluster[start:end]
+                        for cluster in parities
+                        for start, end in ((0, len(cluster) // 2), (len(cluster) // 2, len(cluster)))
+                        if len(cluster) > 1]
+
+            for subcluster in range(0, len(parities), 2):
+
+                left_cluster = parities[subcluster]
+                right_cluster = parities[subcluster + 1]
+
+                vol_left_cluster = self._get_cluster_vol(left_cluster)
+                vol_right_cluster = self._get_cluster_vol(right_cluster)
+
+                alocation_factor = 1 - vol_left_cluster / \
+                    (vol_left_cluster + vol_right_cluster)
+
+                weights[left_cluster] *= alocation_factor
+                weights[right_cluster] *= 1 - alocation_factor
+
+        return weights
+
+    def _get_cluster_vol(self, cluster_assets):
+
+        cov_matrix = self._cov_matrix.iloc[cluster_assets, cluster_assets]
+
+        inv_diagonal = 1 / np.diag(cov_matrix.values)
+        weights = inv_diagonal / \
+            np.sum(inv_diagonal)
+
+        cluster_vol = np.dot(weights, np.dot(
+            cov_matrix, weights))
+
+        return cluster_vol
+    
+    def _mount_weights(self, weights):
+        
+        weights.index = self._columns[weights.index]
+        
+        return weights
 
 class Markowitz:
     '''
