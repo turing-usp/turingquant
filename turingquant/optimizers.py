@@ -22,7 +22,7 @@ class HierarchicalRiskParity:
 
         seriation_columns = self._matrix_seriation()
 
-        weights = self._recursive_besection(seriation_columns)
+        weights = self._recursive_bisection(seriation_columns)
         
         named_weights = self._mount_weights(weights)
 
@@ -36,7 +36,7 @@ class HierarchicalRiskParity:
 
         return seriation_columns
 
-    def _recursive_besection(self, seriation_columns):
+    def _recursive_bisection(self, seriation_columns):
 
         weights = pd.Series(1, index=seriation_columns)
         parities = [seriation_columns]
