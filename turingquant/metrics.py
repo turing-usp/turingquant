@@ -352,4 +352,5 @@ def reverse_cummulative_returns(returns, log_returns=True):
     else:
         returns = 1 + returns 
         cum_returns = returns.iloc[::-1].cumprod().iloc[::-1]
-    return cum_returns
+    
+    return cum_returns - 1
