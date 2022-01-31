@@ -2,7 +2,7 @@
 
 import pandas as pd
 import numpy as np
-import plotly.express as px
+import matplotlib.pyplot as plt
 
 
 class Markowitz:
@@ -17,8 +17,9 @@ class Markowitz:
         risk_free (float): taxa de risco livre utilizada para cálculo do sharpe ratio.
     
     Atributos:
-        wallets (pd.DataFrame): DataFrame contendo os valores 'weights', 'returns', 'vol' e 'sharpe_ratio'
+        wallets (dict): dicionário contendo os valores 'weights', 'returns', 'vol' e 'sharpe_ratio'
                         de todos os portfólios gerados 
+    
     '''
     def __init__(self, df_close, num_portfolios = 10000, risk_free = 0):
         self.df = df_close
@@ -29,6 +30,7 @@ class Markowitz:
     def _generate_wallets(self):
         '''
         Gera carteiras com pesos aleatórios.
+
         Returns:
             wallets (dict): dicionário contendo os valores 'weights', 'returns', 'vol' e 'sharpe_ratio'
                             de todos os portfólios gerados 
@@ -65,18 +67,10 @@ class Markowitz:
             portfolio_vol.append(vol)
             portfolio_sharpe.append(sharpe)
 
-        # métricas (colunas) de cada portfólio (linhas)
-        metrics = pd.DataFrame({
-            'returns': portfolio_exp_returns,
-            'vol': portfolio_vol,
-            'sharpe': portfolio_sharpe
-        })
-
-        # pesos de cada ativo (colunas) por portfólio (linhas)        
-        weights = pd.DataFrame(portfolio_weights, columns=self.df.columns)
-
-        # carteira = métricas + colunas com o peso de cada ativo
-        wallets = pd.concat([metrics, weights], axis=1)
+        wallets = {'weights': portfolio_weights,
+                  'returns': portfolio_exp_returns,
+                  'vol':portfolio_vol,
+                  'sharpe': portfolio_sharpe}
     
         return wallets
         
@@ -89,55 +83,37 @@ class Markowitz:
                             'sharpe_ratio' - Portfólio com melhor Sharpe ratio
                             'volatility' - Portfólio com menor volatilidade
                             'return' - Portfólio com maior retorno
+        
         '''
-
         vol = self.wallets['vol']
         returns = self.wallets['returns']
         sharpe = self.wallets['sharpe']
         
-        if method == 'sharpe_ratio':            
-            best_port_idx = np.array(sharpe).argmax()
+        if method == 'sharpe_ratio':
+            
+            indice = np.array(sharpe).argmax()
+            y_axis = returns[indice]
+            X_axis = vol[indice]
 
-        elif method == 'volatility':            
-            best_port_idx = np.array(vol).argmin()
+        elif method == 'volatility':
+            
+            indice = np.array(vol).argmin()
+            y_axis = returns[indice]
+            X_axis = vol[indice]
 
-        elif method == 'return':             
-            best_port_idx = np.array(returns).argmax()
+        elif method == 'return': 
+            
+            indice = np.array(returns).argmax()
+            y_axis = returns[indice]
+            X_axis = vol[indice]
 
-        else:
-            raise ValueError(
-                f"method espera 'sharpe_ratio', 'volatility' ou 'return', não '{method}'"
-            )
-
-        y_axis = returns[best_port_idx]
-        X_axis = vol[best_port_idx]
-
-        # Plota todos os portfólios
-        fig = px.scatter(
-            self.wallets,
-            x='vol',
-            y='returns',
-            hover_data=self.df.columns,
-            color='sharpe'
-        )
-
-        # Customizações gerais do gráfico
-        fig.update_layout(
-            width=600, height=600,
-            margin=dict(l=10, r=10, t=50, b=10),
-            title='Efficient Frontier',
-            xaxis_title="Volatility",
-            yaxis_title="Returns",
-        )
-
-        # Exibe o ponto do melhor portfólio em vermelho
-        fig.update_traces(
-            marker=dict(size=9, opacity=0.6),
-            selectedpoints=[best_port_idx],
-            selected=dict(marker=dict(color='red', opacity=1))
-        )
-
-        fig.show()
+        plt.scatter(vol, returns, c = sharpe, cmap = 'viridis')
+        plt.scatter(X_axis, y_axis, c = 'red', s = 50)
+        plt.colorbar(label = 'Sharpe Ratio')
+        plt.title("Efficient Frontier")
+        plt.xlabel("Volatility")
+        plt.ylabel("Expected return")
+        plt.show()
 
     def best_portfolio(self, method = 'sharpe_ratio'):
         '''
@@ -149,26 +125,26 @@ class Markowitz:
                             'volatility' - Portfólio com menor volatilidade
                             'return' - Portfólio com maior retorno
         Returns: 
-            weights (pd.Series): Pandas Series contendo os pesos do melhor portfólio.
+            weights (np.array): Numpy array contendo os pesos do melhor portfólio. 
+        
         '''
         
         vol = self.wallets['vol']
         returns = self.wallets['returns']
         sharpe = self.wallets['sharpe']
-        weights = self.wallets.iloc[:, 3:]
+        weights = self.wallets['weights']
         
         if method == 'sharpe_ratio':
-            best_port_idx = np.array(sharpe).argmax()
+
+            indice = np.array(sharpe).argmax()
 
         elif method == 'volatility':
-            best_port_idx = np.array(vol).argmin()
+
+            indice = np.array(vol).argmin()
 
         elif method == 'return':
-            best_port_idx = np.array(returns).argmax()
 
-        else:
-            raise ValueError(
-                f"method espera 'sharpe_ratio', 'volatility' ou 'return', não '{method}'"
-            )
+            indice = np.array(returns).argmax()
 
-        return weights.iloc[best_port_idx]
+        return weights[indice]
+    
