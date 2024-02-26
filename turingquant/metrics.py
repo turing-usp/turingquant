@@ -332,4 +332,25 @@ def value_at_risk(returns, confidance_level = 0.95, window = 1, method = 'varian
         var = var * np.sqrt(window)
     
     return var
+
+def reverse_cummulative_returns(returns, log_returns=True):
+    """
+    Calcula o retorno acumulativo inverso.
     
+    Calcula a quantidade de capital que alguém teria se tivesse investido 
+    uma unidade monetária em cada instante de tempo correspondente.
+    
+    Args:
+        returns (pd.Series): série de retornos para a qual será calculado o mar ratio.
+        log_returns (float): indica se o retorno utilizado é logaritmico (True, default) ou simples (False)
+    Returns:
+        cum_returns (pd.Series): retorno simples do instante `t` até o presente.
+    """
+    if log_returns is True:
+        cum_returns = returns.iloc[::-1].cumsum().iloc[::-1]
+        cum_returns = returns.apply(np.exp)
+    else:
+        returns = 1 + returns 
+        cum_returns = returns.iloc[::-1].cumprod().iloc[::-1]
+    
+    return cum_returns - 1

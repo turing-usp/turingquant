@@ -262,3 +262,21 @@ def plot_allocation(dictionary):
     values = list(dictionary.values())
     fig = px.pie(values=values, names=labels)
     fig.show()
+
+def plot_reverse_cummulative_returns(returns, log_returns=True):
+    """
+    Plota o retorno acumulativo inverso.
+    
+    Calcula a quantidade de capital que alguém teria se tivesse investido 
+    uma unidade monetária em cada instante de tempo correspondente.
+    
+    Args:
+        returns (pd.Series): série de retornos para a qual será calculado o mar ratio.
+        log_returns (float): indica se o retorno utilizado é logaritmico (True, default) ou simples (False)
+    """
+    cum_returns = reverse_cummulative_returns(returns, log_returns)
+    fig = px.line(cum_returns, x=cum_returns.index,
+                    y=cum_returns.name, title='Reverse Cummulative Returns')
+    fig.update_xaxes(title_text='Tempo')
+    fig.update_yaxes(title_text='Retorno Simples')
+    fig.show()
